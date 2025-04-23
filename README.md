@@ -11,7 +11,6 @@ https://brunnur.vedur.is/gps/timeseries/timeseries/HS02-plate.NEU
 
 https://brunnur.vedur.is/gps/timeseries/timeseries/THNA-plate.NEU
 
-https://brunnur.vedur.is/gps/timeseries/timeseries/THOB-plate.NEU 
 
 # TerraSAR-X Spotlight Data:
 
