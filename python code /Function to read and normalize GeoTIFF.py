@@ -11,6 +11,12 @@ def read_and_normalize_tif(file_path):
         no_data_value = src.nodata  # Retrieve the no-data value from metadata
         profile = src.profile  # Get the profile for saving later
 
+        # Mask out no-data values
+        if no_data_value is not None:
+            image_masked = np.ma.masked_equal(image, no_data_value)
+        else:
+            image_masked = np.ma.masked_invalid(image)
+
         # Normalize the image to [0, 1]
         min_val = np.nanmin(image)
         max_val = np.nanmax(image)
