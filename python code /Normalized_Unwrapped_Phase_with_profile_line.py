@@ -614,3 +614,144 @@ plt.subplots_adjust(top=0.93)  # Default is typically around 0.9
 #fig.savefig("Smoothed Profile Plot Normalized_Unw_Phase_Images_Track_102_ASC(31Aug_03Oct2024)_map2.png", dpi=300, bbox_inches="tight")
 
 plt.show()
+
+
+
+
+
+
+### Normalized Unwrapped Phase ifg Images tarck 102 ASC with cohernce map
+
+# Read the images
+tif_paths = [
+    "Normalized_Unw_Phase_ifg_18Jul2024_09Aug2024_27N.tif",
+    "Normalized_Unw_Phase_ifg_31Aug2024_03Oct2024_27N.tif",
+    "Normalized_Unw_Phase_ifg_31Aug2024_05Nov2024_27N.tif",
+    "coh_HH_18Jul2024_09Aug2024_27N.tif",
+    "coh_HH_31Aug2024_03Oct2024_27N.tif",
+    "coh_HH_31Aug2024_05Nov2024_27N.tif"
+]
+titles = [
+    "Normalized_Unw_Phase_ifg_18Jul2024_09Aug2024",
+    "Normalized_Unw_Phase_ifg_31Aug2024_03Oct2024",
+    "Normalized_Unw_Phase_ifg_31Aug2024_05Nov2024",
+    "Coherence_map_18Jul2024_09Aug2024",
+    "Coherence_map_31Aug2024_03Oct2024",
+    "Coherence_map_31Aug2024_05Nov2024" 
+]
+
+# Read the images
+images = [read_image(path) for path in tif_paths]
+
+
+# Define start and end points in georeferenced coordinates (easting, northing)
+start_point_geo = (424500, 7086500)  # Example: (easting, northing)
+end_point_geo = (429000, 7079800)  # Example: (easting, northing)
+
+# Extract row and column coordinates
+rows = [start_point_geo[0], end_point_geo[0]]
+cols = [start_point_geo[1], end_point_geo[1]]
+
+
+print(f"Start Point (Easting, Northing): {start_point_geo}")
+print(f"End Point (Easting, Northing): {end_point_geo}")
+
+# Create subplots
+# Create subplots
+fig, axes = plt.subplots(3, 3, figsize=(25, 25))  # Adjust figsize as needed
+axes = axes.flatten()
+
+# Plot each image with georeferencing
+for i, (ax, (image, transform, crs, bounds)) in enumerate(zip(axes, images)):
+    # Plot the image with georeferencing
+    # Choose colormap based on title or filename
+    if "coh" in tif_paths[i].lower() or "coherence" in titles[i].lower():
+        cmap = "gray"
+    else:
+        cmap = "Spectral"
+    show(image, transform=transform, ax=ax, cmap=cmap)
+    ax.set_title(titles[i],fontsize=14)
+    ax.set_xlabel("Easting (m)")
+    ax.set_ylabel("Northing (m)")
+    # # Set axis labels based on CRS
+    # if crs.is_geographic:
+    #     ax.set_xlabel("Longitude")
+    #     ax.set_ylabel("Latitude")
+    # else:
+    #     ax.set_xlabel("Easting (m)")
+    #     ax.set_ylabel("Northing (m)")
+
+    # Add gridlines
+    ax.grid(color='red', linestyle='--', linewidth=0.5)
+
+    # Plot the line between start and end points
+    ax.plot([start_point_geo[0], end_point_geo[0]],[start_point_geo[1], end_point_geo[1]], 'r-', linewidth=3, label="Line")
+    # Add markers at start and end points
+    ax.plot(start_point_geo[0], start_point_geo[1],'b*', markersize=8, label="Start") # Blue marker
+    ax.plot(end_point_geo[0], end_point_geo[1],'g*', markersize=8, label="End") # Green marker
+    ax.legend(loc='lower right')
+
+# Add a global colorbar for all images
+cbar_ax = fig.add_axes([0.91, 0.18, 0.015, 0.7])
+global_cbar = fig.colorbar(plt.cm.ScalarMappable(cmap="Spectral", norm=plt.Normalize(vmin=-np.pi, vmax=np.pi)), cax=cbar_ax)
+global_cbar.set_ticks([-np.pi, 0, np.pi])
+global_cbar.set_ticklabels([r'$-\pi$', r'$0$', r'$\pi$'])
+global_cbar.set_label("Line of Sight Phase (radians)", fontsize=14)
+
+cbar_ax1 = fig.add_axes([0.95, 0.18, 0.015, 0.7])
+global_cbar1 = fig.colorbar(plt.cm.ScalarMappable(cmap="Spectral", norm=plt.Normalize(0, 1)), cax=cbar_ax1, orientation='vertical')
+global_cbar1.set_label("Normalized value (0 to 1)", fontsize=14)
+
+cbar_ax2 = fig.add_axes([0.99, 0.18, 0.015, 0.7])
+global_cbar2 = fig.colorbar(plt.cm.ScalarMappable(cmap="gray", norm=plt.Normalize(0, 1)), cax=cbar_ax2)
+global_cbar2.set_label("Coherence value (0 to 1)", fontsize=14)
+
+
+#Remove the last empty subplot
+#fig.delaxes(axes[-1])
+
+# Add a main title
+fig.suptitle("Normalized Unwrapped Phase ifg Images tarck 102 ASC with cohernce map (18Jul_05Nov2024)", fontsize=16, fontweight='bold')
+
+# image3 = Image.open("unw+fault.png")
+
+# plt.subplot(3, 2, 4)
+# plt.imshow(image3)  # Keep original colors for the maps
+# plt.title("Normalized_Unw_Phase_Ifg_31Aug_\n3Oct2024_with_Coh_Mask_and_Faults")
+# plt.xlabel("Column Index")
+# plt.ylabel("Row Index")
+# plt.grid(color='red', linestyle='--', linewidth=0.5)
+# # Adjust layout
+# plt.tight_layout(rect=[0, 0, 0.9, 0.95])
+
+
+tif_path_1= "Normalized_Unw_Phase_ifg_18Jul2024_09Aug2024_27N.tif"
+tif_path_2 = "Normalized_Unw_Phase_ifg_31Aug2024_03Oct2024_27N.tif"
+tif_path_3 = "Normalized_Unw_Phase_ifg_31Aug2024_05Nov2024_27N.tif"
+
+# Extract profile lines from the normalized images
+line_values_1 = extract_normlized_line_profile(tif_path_1, start_point_geo, end_point_geo)
+line_values_2 = extract_normlized_line_profile(tif_path_2, start_point_geo, end_point_geo)
+line_values_3 = extract_normlized_line_profile(tif_path_3, start_point_geo, end_point_geo)
+
+# Plot the profile lines
+#plt.figure(figsize=(18, 6))
+plt.subplot(3, 3,(7,9))
+plt.plot(range(len(line_values_1)), line_values_1, color='black', label= "Normalized_Unw_Phase_ifg_18Jul2024_09Aug2024")
+plt.plot(range(len(line_values_2)), line_values_2, color='blue', label= "Normalized_Unw_Phase_ifg_31Aug2024_03Oct2024")
+plt.plot(range(len(line_values_3)), line_values_3, color='red', label= "Normalized_Unw_Phase_ifg_31Aug2024_05Nov2024")
+plt.xlabel('Path in Meters')
+plt.ylabel('Normalized Value')
+plt.title('Profile Plot for Unw Phase ifg track 102 ASC (18Jul_05Nov2024)', fontsize=16, fontweight='bold')
+plt.grid(True)
+plt.legend()
+
+# Add the legend with title
+legend = plt.legend(loc='lower center', title=f"start_point_geo={start_point_geo}, end_point_geo={end_point_geo}",fontsize=16)
+#legend._legend_box.align = "left"  # Align the legend title to the left for better readability
+
+plt.tight_layout(rect=[0, 0, 0.9, 0.99])
+# Save the figure
+fig.savefig("Normalized_Unwrapped_Phase_Images_Track_102_ASC(31Aug_03Oct2024)_map111.png", dpi=300, bbox_inches="tight")
+
+plt.show()
